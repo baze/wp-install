@@ -5,11 +5,11 @@
 # ------------ CONFIGURE THIS ------------
 SITE_NAME=
 THEME_NAME=wp-starter-theme
-DB_NAME=wp_starter_v2
+DB_NAME=
 
 MY_IP=192.168.1.99
 MY_PORT=8080
-MY_SUBPATH=sites/
+MY_SUBPATH=
 
 DB_USER=root
 DB_PASSWORD=root
