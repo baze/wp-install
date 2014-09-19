@@ -5,11 +5,11 @@
 # ------------ CONFIGURE THIS ------------
 SITE_NAME=
 THEME_NAME=wp-starter-theme
-DB_NAME=
+DB_NAME=wp_starter_v2
 
 MY_IP=192.168.1.99
 MY_PORT=8080
-MY_SUBPATH=
+MY_SUBPATH=sites/
 
 DB_USER=root
 DB_PASSWORD=root
@@ -160,7 +160,7 @@ rm public/wordpress/wp-config.php
 echo "--- Installing WordPress ---"
 wp core install
 
-
+wp user create starter-admin martensen@euw.de --user_pass=starter-password --role=administrator
 
 echo "--- Installing Theme ---"
 cd public/content/themes
