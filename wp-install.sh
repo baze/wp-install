@@ -172,7 +172,7 @@ function install_plugins {
   echo "--- Installing Plugins ---"
   wp plugin install 'timber-library' --activate
 
-  for PLUGIN in 'advanced-custom-fields' 'contact-form-7' 'contact-form-7-honeypot' 'custom-post-type-ui' 'ewww-image-optimizer' 'redirection' 'regenerate-thumbnails' 'reveal-ids-for-wp-admin-25' 'stream' 'taxonomy-terms-order' 'wordpress-importer' 'wordpress-seo' 'wp-ban' 'wp-html-compression'
+  for PLUGIN in 'advanced-custom-fields' 'contact-form-7' 'contact-form-7-honeypot' 'custom-post-type-ui' 'ewww-image-optimizer' 'options' 'redirection' 'regenerate-thumbnails' 'reveal-ids-for-wp-admin-25' 'stream' 'taxonomy-terms-order' 'wordpress-importer' 'wordpress-seo' 'wp-ban' 'wp-html-compression'
   do
     wp plugin install $PLUGIN --activate
   done
