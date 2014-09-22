@@ -160,7 +160,7 @@ rm public/wordpress/wp-config.php
 echo "--- Installing WordPress ---"
 wp core install
 
-wp user create starter-admin martensen@euw.de --user_pass=starter-password --role=administrator
+# wp user create starter-admin martensen@euw.de --user_pass=starter-password --role=administrator
 
 echo "--- Installing Theme ---"
 cd public/content/themes
@@ -172,14 +172,14 @@ wp theme activate $THEME_NAME
 echo "--- Installing Plugins ---"
 wp plugin install 'timber-library' --activate
 
-for PLUGIN in 'advanced-custom-fields' 'contact-form-7' 'contact-form-7-honeypot' 'custom-post-type-ui' 'ewww-image-optimizer' 'polylang' 'redirection' 'regenerate-thumbnails' 'reveal-ids-for-wp-admin-25' 'stream' 'taxonomy-terms-order' 'wordpress-importer' 'wordpress-seo' 'wp-ban' 'wp-html-compression'
+for PLUGIN in 'advanced-custom-fields' 'contact-form-7' 'contact-form-7-honeypot' 'custom-post-type-ui' 'ewww-image-optimizer' 'redirection' 'regenerate-thumbnails' 'reveal-ids-for-wp-admin-25' 'stream' 'taxonomy-terms-order' 'wordpress-importer' 'wordpress-seo' 'wp-ban' 'wp-html-compression'
 do
     wp plugin install $PLUGIN --activate
 done
 
-# 'mappress-google-maps-for-wordpress' is currently broken
-wp plugin deactivate mappress-google-maps-for-wordpress
+wp plugin install 'mappress-google-maps-for-wordpress'
 
+wp plugin install 'polylang'
 
 
 echo "--- Installing ACF non-free plugins ---"
@@ -208,7 +208,7 @@ done
 
 wp rewrite structure '/%year%/%monthnum%/%day%/%postname%/' --hard
 
-
+wp rewrite flush --hard 
 
 URL=http:$MY_IP:$MY_PORT/$MY_SUBPATH$SITE_NAME/public
 echo "--- All done! Visit $URL ---"
