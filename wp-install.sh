@@ -19,8 +19,10 @@ DB_PORT=8889
 
 
 # ------------ ACF non-free plugin keys ------------
-ACF_REPEATER_KEY=
+ACF_REPEATER_FIELD_KEY=
 ACF_OPTIONS_PAGE_KEY=
+ACF_GALLERY_FIELD_KEY=
+ACF_FLEXIBLE_CONTENT_FIELD_KEY=
 
 
 
@@ -72,14 +74,6 @@ then
      exit 1
 fi
 
-
-create_database()
-{
-  echo "--- Setting up database ---"
-  mysql --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST --port=$DB_PORT << QUERY_INPUT
-  CREATE DATABASE IF NOT EXISTS $DB_NAME;
-QUERY_INPUT
-}
 
 function configure_wp_cli {
   mkdir $SITE_NAME
@@ -156,15 +150,30 @@ EOF
   rm public/wordpress/wp-config.php
 }
 
+create_database()
+{
+  wp db create
+#  echo "--- Setting up database ---"
+#  mysql --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST --port=$DB_PORT << QUERY_INPUT
+#  CREATE DATABASE IF NOT EXISTS $DB_NAME;
+#QUERY_INPUT
+}
+
 function install_wordpress {
   echo "--- Installing WordPress ---"
   wp core install
+
+  # wp core language install de_DE
+  # wp core language activate de_DE
 }
 
 function install_theme {
   echo "--- Installing Theme ---"
+  
   cd public/content/themes
+  
   git clone git@github.com:baze/wp-starter-theme.git
+
   wp theme activate $THEME_NAME
 }
 
@@ -172,7 +181,7 @@ function install_plugins {
   echo "--- Installing Plugins ---"
   wp plugin install 'timber-library' --activate
 
-  for PLUGIN in 'advanced-custom-fields' 'contact-form-7' 'contact-form-7-honeypot' 'custom-post-type-ui' 'ewww-image-optimizer' 'options' 'redirection' 'regenerate-thumbnails' 'reveal-ids-for-wp-admin-25' 'stream' 'taxonomy-terms-order' 'wordpress-importer' 'wordpress-seo' 'wp-ban' 'wp-html-compression'
+  for PLUGIN in 'advanced-custom-fields' 'contact-form-7' 'contact-form-7-honeypot' 'contact-form-7-modules' 'custom-post-type-ui' 'ewww-image-optimizer' 'options' 'redirection' 'regenerate-thumbnails' 'reveal-ids-for-wp-admin-25' 'stream' 'taxonomy-terms-order' 'wordpress-importer' 'wordpress-seo' 'wp-ban' 'wp-html-compression'
   do
     wp plugin install $PLUGIN --activate
   done
@@ -187,8 +196,8 @@ function install_plugins_nonfree {
 
   pushd public/content/plugins/
 
-  if [ ! -z "$ACF_REPEATER_KEY" ]; then
-    wget -O acf-repeater.zip http://download.advancedcustomfields.com/$ACF_REPEATER_KEY/trunk/ && unzip acf-repeater.zip && rm acf-repeater.zip
+  if [ ! -z "$ACF_REPEATER_FIELD_KEY" ]; then
+    wget -O acf-repeater.zip http://download.advancedcustomfields.com/$ACF_REPEATER_FIELD_KEY/trunk/ && unzip acf-repeater.zip && rm acf-repeater.zip
     wp plugin activate 'acf-repeater'
   fi
 
@@ -197,7 +206,25 @@ function install_plugins_nonfree {
     wp plugin activate 'acf-options-page'
   fi
 
+  if [ ! -z "$ACF_GALLERY_FIELD_KEY" ]; then
+    wget -O acf-gallery.zip http://download.advancedcustomfields.com/$ACF_GALLERY_FIELD_KEY/trunk/ && unzip acf-gallery.zip && rm acf-gallery.zip
+    wp plugin activate 'acf-gallery'
+  fi
+
+  if [ ! -z "$ACF_FLEXIBLE_CONTENT_FIELD_KEY" ]; then
+    wget -O acf-flexible-content.zip http://download.advancedcustomfields.com/$ACF_FLEXIBLE_CONTENT_FIELD_KEY/trunk/ && unzip acf-flexible-content.zip && rm acf-flexible-content.zip
+    wp plugin activate 'acf-flexible-content'
+  fi
+
   popd
+
+  wp plugin install acf-fold-flexible-content --activate
+  wp plugin install advanced-custom-fields-contact-form-7-field --activate
+}
+
+function add_languages {
+  wp plugin activate polylang
+  wp polylang language add de_DE
 }
 
 function publish_content {
@@ -209,6 +236,15 @@ function publish_content {
   do
     wp post create --post_type=page --post_title=$PAGENAME  --post_status=publish
   done
+
+  wp menu create "Hauptmenü"
+  wp menu location assign "Hauptmenü" menu_primary
+
+  wp menu create "Footermenü"
+  wp menu location assign "Footermenü" menu_secondary
+  
+  wp menu create "Benutzerdefiniertes Menü"
+  wp menu location assign "Benutzerdefiniertes Menü" menu_custom
 }
 
 function update_permalinks {
@@ -222,14 +258,15 @@ function show_site {
   open $URL
 }
 
-create_database
 configure_wp_cli
 download_wordpress
 configure_wordpress
+create_database
 install_wordpress
 install_theme
 install_plugins
 install_plugins_nonfree
+add_languages
 publish_content
 update_permalinks
 show_site
